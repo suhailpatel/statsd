@@ -75,12 +75,13 @@ func (c *Client) Clone(opts ...Option) *Client {
 	return clone
 }
 
-// Count adds n to bucket.
-func (c *Client) Count(bucket string, n interface{}) {
+// Count adds n to bucket. Tags should be specified as K, V pairs
+func (c *Client) Count(bucket string, n interface{}, tags ...string) {
 	if c.skip() {
 		return
 	}
-	c.conn.metric(c.prefix, bucket, n, "c", c.rate, c.tags)
+	allTags := mergeTags(c.tags, tags)
+	c.conn.metric(c.prefix, bucket, n, "c", c.rate, allTags)
 }
 
 func (c *Client) skip() bool {
@@ -93,11 +94,12 @@ func (c *Client) Increment(bucket string) {
 }
 
 // Gauge records an absolute value for the given bucket.
-func (c *Client) Gauge(bucket string, value interface{}) {
+func (c *Client) Gauge(bucket string, value interface{}, tags ...string) {
 	if c.skip() {
 		return
 	}
-	c.conn.gauge(c.prefix, bucket, value, c.tags)
+	allTags := mergeTags(c.tags, tags)
+	c.conn.gauge(c.prefix, bucket, value, allTags)
 }
 
 // Timing sends a timing value to a bucket.
@@ -105,15 +107,17 @@ func (c *Client) Timing(bucket string, value interface{}) {
 	if c.skip() {
 		return
 	}
-	c.conn.metric(c.prefix, bucket, value, "ms", c.rate, c.tags)
+	allTags := mergeTags(c.tags, tags)
+	c.conn.metric(c.prefix, bucket, value, "ms", c.rate, allTags)
 }
 
 // Histogram sends an histogram value to a bucket.
-func (c *Client) Histogram(bucket string, value interface{}) {
+func (c *Client) Histogram(bucket string, value interface{}, tags ...string) {
 	if c.skip() {
 		return
 	}
-	c.conn.metric(c.prefix, bucket, value, "h", c.rate, c.tags)
+	allTags := mergeTags(c.tags, tags)
+	c.conn.metric(c.prefix, bucket, value, "h", c.rate, allTags)
 }
 
 // A Timing is an helper object that eases sending timing values.
@@ -138,11 +142,12 @@ func (t Timing) Duration() time.Duration {
 }
 
 // Unique sends the given value to a set bucket.
-func (c *Client) Unique(bucket string, value string) {
+func (c *Client) Unique(bucket string, value string, tags ...string) {
 	if c.skip() {
 		return
 	}
-	c.conn.unique(c.prefix, bucket, value, c.tags)
+	allTags := mergeTags(c.tags, tags)
+	c.conn.unique(c.prefix, bucket, value, allTags)
 }
 
 // Flush flushes the Client's buffer.
