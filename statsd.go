@@ -76,6 +76,7 @@ func (c *Client) Clone(opts ...Option) *Client {
 }
 
 // Count adds n to bucket. Tags should be specified as K, V pairs
+// Tags should be specified as K, V pairs
 func (c *Client) Count(bucket string, n interface{}, tags ...string) {
 	if c.skip() {
 		return
@@ -89,6 +90,7 @@ func (c *Client) skip() bool {
 }
 
 // Increment increment the given bucket. It is equivalent to Count(bucket, 1).
+// Tags should be specified as K, V pairs
 func (c *Client) Increment(bucket string, tags ...string) {
 	c.Count(bucket, 1, tags...)
 }
