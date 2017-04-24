@@ -89,8 +89,8 @@ func (c *Client) skip() bool {
 }
 
 // Increment increment the given bucket. It is equivalent to Count(bucket, 1).
-func (c *Client) Increment(bucket string) {
-	c.Count(bucket, 1)
+func (c *Client) Increment(bucket string, tags ...string) {
+	c.Count(bucket, 1, tags...)
 }
 
 // Gauge records an absolute value for the given bucket.

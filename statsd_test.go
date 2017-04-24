@@ -173,9 +173,21 @@ func TestInfluxDBTags(t *testing.T) {
 	}, TagsFormat(InfluxDB), Tags("tag1", "value1", "tag2", "value2"))
 }
 
+func TestInfluxDBTagsWithMetricTags(t *testing.T) {
+	testOutput(t, "test_key,tag1=value1,tag2=value3,tag3=value4:1|c", func(c *Client) {
+		c.Increment(testKey, "tag2", "value3", "tag3", "value4")
+	}, TagsFormat(InfluxDB), Tags("tag1", "value1", "tag2", "value2"))
+}
+
 func TestDatadogTags(t *testing.T) {
 	testOutput(t, "test_key:1|c|#tag1:value1,tag2:value2", func(c *Client) {
 		c.Increment(testKey)
+	}, TagsFormat(Datadog), Tags("tag1", "value1", "tag2", "value2"))
+}
+
+func TestDatadogTagsWithMetricTags(t *testing.T) {
+	testOutput(t, "test_key:1|c|#tag1:value1,tag2:value3,tag3:value4", func(c *Client) {
+		c.Increment(testKey, "tag2", "value3", "tag3", "value4")
 	}, TagsFormat(Datadog), Tags("tag1", "value1", "tag2", "value2"))
 }
 

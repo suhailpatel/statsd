@@ -184,10 +184,10 @@ func mergeTags(tags []tag, newTags []string) []tag {
 		val := newTags[2*i+1]
 
 		exists := false
-		for _, oldTag := range output {
-			if key == oldTag.K {
+		for j, _ := range output {
+			if key == output[j].K {
 				exists = true
-				oldTag.V = val
+				output[j].V = val
 			}
 		}
 
