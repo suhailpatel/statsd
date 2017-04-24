@@ -94,6 +94,7 @@ func (c *Client) Increment(bucket string, tags ...string) {
 }
 
 // Gauge records an absolute value for the given bucket.
+// Tags should be specified as K, V pairs
 func (c *Client) Gauge(bucket string, value interface{}, tags ...string) {
 	if c.skip() {
 		return
@@ -103,6 +104,7 @@ func (c *Client) Gauge(bucket string, value interface{}, tags ...string) {
 }
 
 // Timing sends a timing value to a bucket.
+// Tags should be specified as K, V pairs
 func (c *Client) Timing(bucket string, value interface{}, tags ...string) {
 	if c.skip() {
 		return
@@ -112,6 +114,7 @@ func (c *Client) Timing(bucket string, value interface{}, tags ...string) {
 }
 
 // Histogram sends an histogram value to a bucket.
+// Tags should be specified as K, V pairs
 func (c *Client) Histogram(bucket string, value interface{}, tags ...string) {
 	if c.skip() {
 		return
@@ -132,8 +135,9 @@ func (c *Client) NewTiming() Timing {
 }
 
 // Send sends the time elapsed since the creation of the Timing.
-func (t Timing) Send(bucket string) {
-	t.c.Timing(bucket, int(t.Duration()/time.Millisecond))
+// Tags should be specified as K, V pairs
+func (t Timing) Send(bucket string, tags ...string) {
+	t.c.Timing(bucket, int(t.Duration()/time.Millisecond), tags...)
 }
 
 // Duration returns the time elapsed since the creation of the Timing.
@@ -142,6 +146,7 @@ func (t Timing) Duration() time.Duration {
 }
 
 // Unique sends the given value to a set bucket.
+// Tags should be specified as K, V pairs
 func (c *Client) Unique(bucket string, value string, tags ...string) {
 	if c.skip() {
 		return
