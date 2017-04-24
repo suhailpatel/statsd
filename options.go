@@ -141,26 +141,7 @@ func Tags(tags ...string) Option {
 			return
 		}
 
-		newTags := make([]tag, len(tags)/2)
-		for i := 0; i < len(tags)/2; i++ {
-			newTags[i] = tag{K: tags[2*i], V: tags[2*i+1]}
-		}
-
-		for _, newTag := range newTags {
-			exists := false
-			for _, oldTag := range c.Client.Tags {
-				if newTag.K == oldTag.K {
-					exists = true
-					oldTag.V = newTag.V
-				}
-			}
-			if !exists {
-				c.Client.Tags = append(c.Client.Tags, tag{
-					K: newTag.K,
-					V: newTag.V,
-				})
-			}
-		}
+		c.Client.Tags = mergeTags([]tag{}, tags)
 	})
 }
 
@@ -182,6 +163,40 @@ func splitTags(tf TagFormat, tags string) []tag {
 	}
 	split := splitFuncs[tf]
 	return split(tags)
+}
+
+func mergeTags(tags []tag, newTags []string) []tag {
+	if len(newTags)%2 != 0 {
+		panic("statsd: Tags only accepts an even number of arguments")
+	}
+
+	if len(newTags) == 0 {
+		return tags
+	}
+
+	output := make([]tag, len(tags))
+	for i, t := range tags {
+		output[i] = tag{K: t.K, V: t.V}
+	}
+
+	for i := 0; i < len(newTags)/2; i++ {
+		key := newTags[2*i]
+		val := newTags[2*i+1]
+
+		exists := false
+		for _, oldTag := range output {
+			if key == oldTag.K {
+				exists = true
+				oldTag.V = val
+			}
+		}
+
+		if !exists {
+			output = append(output, tag{K: key, V: val})
+		}
+	}
+
+	return output
 }
 
 const (
